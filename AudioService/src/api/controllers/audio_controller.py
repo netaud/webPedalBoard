@@ -1,10 +1,10 @@
-from flask import Flask, request,jsonify
-from src.api.models.audio import Audio, db
-from src.api.schemas.audio_schema import AudioSchema
+from flask import Flask, request,jsonify, Blueprint
+from api.models.audio import Audio, db
+from api.schemas.audio_schema import AudioSchema
 from flask_cors import CORS
 
-app = Flask(__name__ )
-CORS(app)
+audios_bp = Blueprint('audios', __name__)
+CORS(audios_bp)
 URI = "/api/v1.0/audios"
 
 audio_schema = AudioSchema()
@@ -13,7 +13,7 @@ audio_schema = AudioSchema()
 class AudioController:
 
     @staticmethod
-    @app.route(URI, methods=['GET'])
+    @audios_bp.route(URI, methods=['GET'])
     def get_audios():
         try:
             all_audios = Audio.query.all()
@@ -28,7 +28,7 @@ class AudioController:
             return jsonify({"message": "Internal Server Error"}), 500
 
     @staticmethod
-    @app.route(URI+"/<int:id>", methods=["GET"])
+    @audios_bp.route(URI+"/<int:id>", methods=["GET"])
     def get_audio(id):
         try:
             single_audio = Audio.query.get(id)
@@ -41,7 +41,7 @@ class AudioController:
             return jsonify({"message": "Internal Server Error"}), 500
 
     @staticmethod
-    @app.route(URI, methods=['POST'])
+    @audios_bp.route(URI, methods=['POST'])
     def post_audio():
         data = request.get_json()
         new_audio = Audio(
@@ -55,7 +55,7 @@ class AudioController:
         return audio_schema.dump(new_audio)
 
     @staticmethod
-    @app.route(URI+"/<int:id>", methods=['PUT'])
+    @audios_bp.route(URI+"/<int:id>", methods=['PUT'])
     def put_audio(id):
         try:
             single_audio = Audio.query.get(id)
@@ -81,7 +81,7 @@ class AudioController:
             return jsonify({"message": "Internal Server Error"}), 500
 
     @staticmethod
-    @app.route(URI+"/<int:id>",methods=['DELETE'])
+    @audios_bp.route(URI+"/<int:id>",methods=['DELETE'])
     def delete_audio(id):
         try:
             audio_to_delete = Audio.query.get(id)

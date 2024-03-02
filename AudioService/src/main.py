@@ -1,6 +1,11 @@
-from src.api.controllers.audio_controller import app
-from src.api.models.audio import db
+from api.controllers.audio_controller import audios_bp
+from api.controllers.file_controller import file_bp
+from api.models.audio import db
+from flask import Flask
 
+app = Flask(__name__)
+app.register_blueprint(audios_bp)
+app.register_blueprint(file_bp)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:my-secret-pw@127.0.0.1:3306/mydatabase'
 db.init_app(app)
 

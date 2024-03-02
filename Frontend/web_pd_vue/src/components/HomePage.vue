@@ -19,6 +19,11 @@
       <h2 class="mt-2">{{ content }}</h2>
     </div>
 
+    <div>
+      <input type="file" ref="fileInput" @change="handleFileChange">
+      <button @click="uploadFile">Upload</button>
+    </div>
+
   </div>
 </template>
 
@@ -29,6 +34,7 @@ export default {
   data() {
     return {
       content:null,
+      selectedFile: null,
       url: "http://localhost:8080/api/v1.0/audios",
       postData: {
         name: "", // Input for title
@@ -78,6 +84,28 @@ export default {
         })
         .catch((error) => {
           console.error("Error making GET single request:", error);
+        });
+    },
+    handleFileChange(event) {
+      this.selectedFile = event.target.files[0];
+    },
+    uploadFile() {
+      if (!this.selectedFile) {
+        alert('Please select a file');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', this.selectedFile);
+
+      axios.post('http://localhost:8080/api/v1.0/upload', formData)
+        .then(response => {
+          console.log(response.data);
+          alert('File uploaded successfully');
+        })
+        .catch(error => {
+          console.error(error);
+          alert('Error uploading file');
         });
     },
   },
